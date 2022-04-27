@@ -5,10 +5,10 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    public float speed = 0;
+    public float speed;
     public bool space_down = false;
     public float jump_power = 1;
-    Vector3 movement;
+    private Vector3 movement;
     public bool in_air = false;
     public float jump_multiplier;
 
@@ -43,6 +43,12 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        float horizontal = Input.GetAxis("Horizontal");
+        float vertical = Input.GetAxis("Vertical");
+        movement = new Vector3(horizontal, 0f, vertical);
+
+        MovePlayer();
+
         if (Input.GetKeyDown("space"))
         {
             space_down = true;
@@ -76,5 +82,12 @@ public class PlayerController : MonoBehaviour
             space_down = false;
         }
     }
+
+    private void MovePlayer()
+    {
+        Vector3 MovementVector = transform.TransformDirection(movement) * speed;
+        rb.velocity = new Vector3(MovementVector.x, rb.velocity.y, MovementVector.z);
+    }
+
 
 }
