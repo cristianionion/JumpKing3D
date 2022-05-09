@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviour
     public float jump_multiplier;
 
     private Rigidbody rb;
-
+    
 
     // Start is called before the first frame update
     void Start()
@@ -43,11 +43,11 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        float horizontal = Input.GetAxis("Horizontal");
-        float vertical = Input.GetAxis("Vertical");
-        movement = new Vector3(horizontal, 0f, vertical);
+        //float horizontal = Input.GetAxis("Horizontal");
+        //float vertical = Input.GetAxis("Vertical");
+        //movement = new Vector3(horizontal, 0f, vertical);
 
-        MovePlayer();
+        //MovePlayer();
 
         if (Input.GetKeyDown("space"))
         {
@@ -57,7 +57,7 @@ public class PlayerController : MonoBehaviour
         if(space_down){
             jump_power = jump_power + jump_multiplier;
         }
-
+        
         if(Input.GetKeyDown("right")){
             movement = new Vector3(40.0f, 0.0f, 0.0f);
         }
@@ -73,7 +73,7 @@ public class PlayerController : MonoBehaviour
         if(Input.GetKeyUp("left")){
             movement = new Vector3(0.0f, 0.0f, 0.0f);
         }
-
+        
         if (Input.GetKeyUp("space") && space_down)
         {
             rb.AddForce(Vector3.up * jump_power, ForceMode.Impulse);
@@ -81,13 +81,28 @@ public class PlayerController : MonoBehaviour
             jump_power = 0;
             space_down = false;
         }
+
+        // player movement when on the ground
+        if (Input.GetKey("left") && !space_down && !in_air){
+            movement = new Vector3(-4.0f,0.0f,0.0f);
+            rb.AddForce(movement*speed);
+        }
+        if (Input.GetKey("right") && !space_down && !in_air){
+            movement = new Vector3(4.0f,0.0f,0.0f);
+            rb.AddForce(movement*speed);
+        }
+        // stops ball from rolling on the ground if there is no left or right input
+        if ((Input.GetKeyUp("left") || Input.GetKeyUp("right"))&& !in_air){
+            rb.velocity = new Vector2 (0,0);
+        }
+        
     }
 
-    private void MovePlayer()
+    /*private void MovePlayer()
     {
         Vector3 MovementVector = transform.TransformDirection(movement) * speed;
         rb.velocity = new Vector3(MovementVector.x, rb.velocity.y, MovementVector.z);
-    }
+    }*/
 
 
 }
