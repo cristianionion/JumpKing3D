@@ -92,8 +92,15 @@ public class PlayerController : MonoBehaviour
             rb.AddForce(movement*speed);
         }
         // stops ball from rolling on the ground if there is no left or right input
-        if ((Input.GetKeyUp("left") || Input.GetKeyUp("right"))&& !in_air){
-            rb.velocity = new Vector2 (0,0);
+        if (Input.GetKeyUp("left") && !in_air){
+            rb.velocity = new Vector2 (-2,0);
+        }
+        if (Input.GetKeyUp("right") && !in_air){
+            rb.velocity = new Vector2 (2,0);
+        }
+        // if player falls through ground floor, reset position
+        if (transform.position.y <0.3f){
+            transform.position = new Vector3 (0.0f,0.5f,0.0f);
         }
         
     }
