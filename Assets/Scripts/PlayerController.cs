@@ -6,12 +6,14 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     public float speed;
-    public bool space_down = false;
-    public float jump_power = 1;
-    private Vector3 movement;
-    public bool in_air = false;
     public float jump_multiplier;
+    public float min_power;
+    public float max_power;
 
+    private bool space_down = false;
+    public float jump_power = 0;
+    private Vector3 movement;
+    private bool in_air = false;
     private Rigidbody rb;
     
 
@@ -20,7 +22,7 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
     }
-
+    //stop the player when they land on a platform
     void OnCollisionEnter(Collision theCollision)
     {
         if (theCollision.gameObject.CompareTag("Stop") && in_air)
@@ -31,7 +33,7 @@ public class PlayerController : MonoBehaviour
             in_air = false;
         }
     }
-
+    //Set the player to in air when they jump
     void OnCollisionExit(Collision theCollision)
     {
         if (theCollision.gameObject.CompareTag("Stop"))
@@ -40,6 +42,9 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    float Power(float power){
+        return (1 - power) * min_power + power * max_power;
+    }
 
     void Update()
     {
@@ -59,11 +64,11 @@ public class PlayerController : MonoBehaviour
         }
         //if player presses the right key then jump right
         if(Input.GetKeyDown("right")){
-            movement = new Vector3(180.0f, 0.0f, 0.0f);
+            movement = new Vector3(250.0f, 0.0f, 0.0f);
         }
         //if player presses the left key then jump left
         if(Input.GetKeyDown("left")){
-            movement = new Vector3(-180.0f, 0.0f, 0.0f);
+            movement = new Vector3(-250.0f, 0.0f, 0.0f);
         }
         //if player releases the right key then dont jump that way anymore
         if(Input.GetKeyUp("right")){
@@ -76,7 +81,11 @@ public class PlayerController : MonoBehaviour
         //when the player releases the space bar then jump up and to whatever direction the wanted
         if (Input.GetKeyUp("space") && space_down)
         {
-            rb.AddForce(Vector3.up * jump_power, ForceMode.Impulse);
+            if(jump_power > 1){
+                jump_power = 1;
+            }
+
+            rb.AddForce(Vector3.up * Power(jump_power), ForceMode.Impulse);
             rb.AddForce(movement * speed);
             jump_power = 0;
             space_down = false;

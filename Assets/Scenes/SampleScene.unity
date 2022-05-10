@@ -1438,10 +1438,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 3
-  space_down: 0
-  jump_power: 1
-  in_air: 0
-  jump_multiplier: 0.1
+  jump_multiplier: 0.002
+  min_power: 5
+  max_power: 50
+  jump_power: 0
 --- !u!114 &785680234
 MonoBehaviour:
   m_ObjectHideFlags: 0
