@@ -48,32 +48,32 @@ public class PlayerController : MonoBehaviour
         //movement = new Vector3(horizontal, 0f, vertical);
 
         //MovePlayer();
-
+        //See if player is trying to jump
         if (Input.GetKeyDown("space"))
         {
             space_down = true;
         }
-
+        //while player is holding space add power
         if(space_down){
             jump_power = jump_power + jump_multiplier;
         }
-        
+        //if player presses the right key then jump right
         if(Input.GetKeyDown("right")){
-            movement = new Vector3(40.0f, 0.0f, 0.0f);
+            movement = new Vector3(180.0f, 0.0f, 0.0f);
         }
-
+        //if player presses the left key then jump left
         if(Input.GetKeyDown("left")){
-            movement = new Vector3(-40.0f, 0.0f, 0.0f);
+            movement = new Vector3(-180.0f, 0.0f, 0.0f);
         }
-
+        //if player releases the right key then dont jump that way anymore
         if(Input.GetKeyUp("right")){
             movement = new Vector3(0.0f, 0.0f, 0.0f);
         }
-
+        //if player releases the left key then dont jump that way anymore
         if(Input.GetKeyUp("left")){
             movement = new Vector3(0.0f, 0.0f, 0.0f);
         }
-        
+        //when the player releases the space bar then jump up and to whatever direction the wanted
         if (Input.GetKeyUp("space") && space_down)
         {
             rb.AddForce(Vector3.up * jump_power, ForceMode.Impulse);
