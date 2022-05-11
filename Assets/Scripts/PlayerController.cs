@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System;
 
 public class PlayerController : MonoBehaviour
 {
@@ -16,6 +17,7 @@ public class PlayerController : MonoBehaviour
     private Vector3 movement;
     private bool in_air = false;
     private Rigidbody rb;
+    public float power;
     
 
     // Start is called before the first frame update
@@ -91,6 +93,8 @@ public class PlayerController : MonoBehaviour
                 jump_power = 1;
             }
 
+            power = 0;
+            power = Power(jump_power);
             rb.AddForce(Vector3.up * Power(jump_power), ForceMode.Impulse);
             rb.AddForce(movement * speed);
             jump_power = 0;
