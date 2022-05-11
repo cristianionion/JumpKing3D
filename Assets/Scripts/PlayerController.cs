@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour
 
     private bool space_down = false;
     public float jump_power = 0;
+    private Vector3 reflect;
     private Vector3 movement;
     private bool in_air = false;
     private Rigidbody rb;
@@ -27,10 +28,15 @@ public class PlayerController : MonoBehaviour
     {
         if (theCollision.gameObject.CompareTag("Stop") && in_air)
         {
-            movement = new Vector3(0.0f, 0.0f, 0.0f);
-            rb.velocity = movement;
-            rb.Sleep();
+            //movement = new Vector3(0.0f, 0.0f, 0.0f);
+            //rb.velocity = movement;
+            //rb.Sleep();
             in_air = false;
+        }
+
+        if (theCollision.gameObject.CompareTag("Bounce") && in_air)
+        {
+            //TODO bounce off walls
         }
     }
     //Set the player to in air when they jump
@@ -101,15 +107,15 @@ public class PlayerController : MonoBehaviour
             rb.AddForce(movement*speed);
         }
         // stops ball from rolling on the ground if there is no left or right input
-        if (Input.GetKeyUp("left") && !in_air){
+        if (Input.GetKeyUp("left") && !in_air && !space_down){
             rb.velocity = new Vector2 (-2,0);
         }
-        if (Input.GetKeyUp("right") && !in_air){
+        if (Input.GetKeyUp("right") && !in_air && !space_down){
             rb.velocity = new Vector2 (2,0);
         }
         // if player falls through ground floor, reset position
         if (transform.position.y <0.3f){
-            transform.position = new Vector3 (0.0f,0.5f,0.0f);
+            //transform.position = new Vector3 (0.0f,0.5f,0.0f);
         }
         
     }
