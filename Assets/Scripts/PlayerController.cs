@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviour
 
     private bool space_down = false;
     public float jump_power = 0;
-    private Vector3 reflect;
+    private Vector3 last_velocity;
     private Vector3 movement;
     private bool in_air = false;
     private Rigidbody rb;
@@ -38,7 +38,8 @@ public class PlayerController : MonoBehaviour
 
         if (theCollision.gameObject.CompareTag("Bounce") && in_air)
         {
-            //TODO bounce off walls
+            Vector3 reflect = Vector3.Reflect(last_velocity, Vector3.right);
+            rb.velocity = reflect;
         }
     }
     //Set the player to in air when they jump
@@ -61,6 +62,8 @@ public class PlayerController : MonoBehaviour
         //movement = new Vector3(horizontal, 0f, vertical);
 
         //MovePlayer();
+
+        last_velocity = rb.velocity;
         //See if player is trying to jump
         if (Input.GetKeyDown("space"))
         {
