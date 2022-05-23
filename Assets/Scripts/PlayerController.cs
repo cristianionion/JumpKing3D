@@ -75,11 +75,11 @@ public class PlayerController : MonoBehaviour
         }
         //if player presses the right key then jump right
         if(Input.GetKeyDown("right")){
-            movement = new Vector3(250.0f, 0.0f, 0.0f);
+            movement = new Vector3(350.0f, 0.0f, 0.0f);
         }
         //if player presses the left key then jump left
         if(Input.GetKeyDown("left")){
-            movement = new Vector3(-250.0f, 0.0f, 0.0f);
+            movement = new Vector3(-350.0f, 0.0f, 0.0f);
         }
         //if player releases the right key then dont jump that way anymore
         if(Input.GetKeyUp("right")){
