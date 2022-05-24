@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
+using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
@@ -18,6 +19,10 @@ public class PlayerController : MonoBehaviour
     private bool in_air = false;
     private Rigidbody rb;
     public float power;
+
+    public TextMeshProUGUI timer;
+    private float startTime = 0f;
+    private float currentTime = 0f;
     
 
     // Start is called before the first frame update
@@ -62,6 +67,22 @@ public class PlayerController : MonoBehaviour
         //movement = new Vector3(horizontal, 0f, vertical);
 
         //MovePlayer();
+
+        if (startTime <= 0){
+
+            currentTime += Time.deltaTime;
+            int minutes = (int)currentTime / 60;
+            int seconds = (int)currentTime %60; 
+            
+            if (seconds < 10){
+                timer.text = "Time Elapsed: " +minutes.ToString()+":0"+seconds.ToString();
+            }
+            else{
+                timer.text = "Time Elapsed: "+ minutes.ToString()+":"+ seconds.ToString();
+            }
+
+            
+        }
 
         last_velocity = rb.velocity;
         //See if player is trying to jump
