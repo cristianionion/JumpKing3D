@@ -68,12 +68,12 @@ public class PlayerController : MonoBehaviour
 
         //MovePlayer();
 
-        if (startTime <= 0){
 
+        // Displays game time for player
+        if (startTime <= 0){
             currentTime += Time.deltaTime;
             int minutes = (int)currentTime / 60;
             int seconds = (int)currentTime %60; 
-            
             if (seconds < 10){
                 timer.text = "Time Elapsed: " +minutes.ToString()+":0"+seconds.ToString();
             }
@@ -111,7 +111,7 @@ public class PlayerController : MonoBehaviour
             movement = new Vector3(0.0f, 0.0f, 0.0f);
         }
         //when the player releases the space bar then jump up and to whatever direction the wanted
-        if (Input.GetKeyUp("space") && space_down)
+        if (Input.GetKeyUp("space") && space_down && !in_air)
         {
             if(jump_power > 1){
                 jump_power = 1;
@@ -127,18 +127,20 @@ public class PlayerController : MonoBehaviour
 
         // player movement when on the ground
         if (Input.GetKey("left") && !space_down && !in_air){
-            movement = new Vector3(-4.0f,0.0f,0.0f);
+            movement = new Vector3(-6.0f,0.0f,0.0f);
+            //rb.velocity =  movement;
             rb.AddForce(movement*speed);
         }
         if (Input.GetKey("right") && !space_down && !in_air){
-            movement = new Vector3(4.0f,0.0f,0.0f);
+            movement = new Vector3(6.0f,0.0f,0.0f);
+            //rb.velocity = movement;
             rb.AddForce(movement*speed);
         }
         // stops ball from rolling on the ground if there is no left or right input
         if (Input.GetKeyUp("left") && !in_air && !space_down){
             rb.velocity = new Vector2 (-2,0);
         }
-        if (Input.GetKeyUp("right") && !in_air && !space_down){
+        if (Input.GetKeyUp("right") && !in_air && !space_down ){
             rb.velocity = new Vector2 (2,0);
         }
         // if player falls through ground floor, reset position
