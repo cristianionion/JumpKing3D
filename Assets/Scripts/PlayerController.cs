@@ -12,6 +12,8 @@ public class PlayerController : MonoBehaviour
     public float min_power;
     public float max_power;
 
+    private bool isWalking = false;
+    private bool Squat = false;
     private bool space_down = false;
     public float jump_power = 0;
     private Vector3 last_velocity;
@@ -23,12 +25,14 @@ public class PlayerController : MonoBehaviour
     public TextMeshProUGUI timer;
     private float startTime = 0f;
     private float currentTime = 0f;
+    Animator m_Animator;
     
 
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        m_Animator = GetComponent<Animator> ();
     }
     //stop the player when they land on a platform
     void OnCollisionEnter(Collision theCollision)
@@ -39,6 +43,7 @@ public class PlayerController : MonoBehaviour
             //rb.velocity = movement;
             //rb.Sleep();
             in_air = false;
+            m_Animator.SetBool("inAir", in_air);
         }
 
         if (theCollision.gameObject.CompareTag("Bounce") && in_air)
@@ -53,11 +58,46 @@ public class PlayerController : MonoBehaviour
         if (theCollision.gameObject.CompareTag("Stop"))
         {
             in_air = true;
+            m_Animator.SetBool("inAir", in_air);
         }
     }
 
     float Power(float power){
         return (1 - power) * min_power + power * max_power;
+    }
+
+    public float turnSpeed = 20.0f;
+
+
+    AudioSource m_AudioSource;
+    Vector3 m_Movement;
+    Quaternion m_Rotation = Quaternion.identity;
+
+ 
+    // Update is called once per frame
+    void FixedUpdate()
+    {
+        float horizontal = Input.GetAxis("Horizontal");
+        float vertical = Input.GetAxis("Vertical");
+
+        m_Movement.Set(horizontal, 0f, vertical);
+        m_Movement.Normalize();
+
+        bool hasHorizontalInput = !Mathf.Approximately(horizontal, 0f);
+        bool hasVerticalInput = !Mathf.Approximately(vertical, 0f);
+        isWalking = hasHorizontalInput || hasVerticalInput;
+        m_Animator.SetBool("IsWalking", isWalking);
+
+
+        Vector3 desiredForward = Vector3.RotateTowards(transform.forward, m_Movement, turnSpeed * Time.deltaTime, 0f);
+        m_Rotation = Quaternion.LookRotation(desiredForward);
+
+    }
+
+    void OnAnimatorMove()
+    {
+        rb.MovePosition(rb.position + m_Movement * m_Animator.deltaPosition.magnitude * 2);
+        rb.MoveRotation(m_Rotation);
     }
 
     void Update()
@@ -93,6 +133,10 @@ public class PlayerController : MonoBehaviour
         //while player is holding space add power
         if(space_down){
             jump_power = jump_power + jump_multiplier;
+            Squat = true;
+            isWalking = false;
+            m_Animator.SetBool("Squat", Squat);
+            m_Animator.SetBool("IsWalking", isWalking);
         }
         //if player presses the right key then jump right
         if(Input.GetKeyDown("right")){
@@ -123,26 +167,29 @@ public class PlayerController : MonoBehaviour
             rb.AddForce(movement * speed);
             jump_power = 0;
             space_down = false;
+            Squat = false;
+            m_Animator.SetBool("Squat", Squat);
+            
         }
 
         // player movement when on the ground
-        if (Input.GetKey("left") && !space_down && !in_air){
-            movement = new Vector3(-6.0f,0.0f,0.0f);
-            //rb.velocity =  movement;
-            rb.AddForce(movement*speed);
-        }
-        if (Input.GetKey("right") && !space_down && !in_air){
-            movement = new Vector3(6.0f,0.0f,0.0f);
-            //rb.velocity = movement;
-            rb.AddForce(movement*speed);
-        }
-        // stops ball from rolling on the ground if there is no left or right input
-        if (Input.GetKeyUp("left") && !in_air && !space_down){
-            rb.velocity = new Vector2 (-2,0);
-        }
-        if (Input.GetKeyUp("right") && !in_air && !space_down ){
-            rb.velocity = new Vector2 (2,0);
-        }
+        // if (Input.GetKey("left") && !space_down && !in_air){
+        //     movement = new Vector3(-6.0f,0.0f,0.0f);
+        //     //rb.velocity =  movement;
+        //     rb.AddForce(movement*speed);
+        // }
+        // if (Input.GetKey("right") && !space_down && !in_air){
+        //     movement = new Vector3(6.0f,0.0f,0.0f);
+        //     //rb.velocity = movement;
+        //     rb.AddForce(movement*speed);
+        // }
+        // // stops ball from rolling on the ground if there is no left or right input
+        // if (Input.GetKeyUp("left") && !in_air && !space_down){
+        //     rb.velocity = new Vector2 (-2,0);
+        // }
+        // if (Input.GetKeyUp("right") && !in_air && !space_down ){
+        //     rb.velocity = new Vector2 (2,0);
+        // }
         // if player falls through ground floor, reset position
         if (transform.position.y <0.3f){
             //transform.position = new Vector3 (0.0f,0.5f,0.0f);
