@@ -11,24 +11,28 @@ public class PlayerController : MonoBehaviour
     public float jump_multiplier;
     public float min_power;
     public float max_power;
+    public AudioSource grass_walking;
+    public AudioSource grass_landing;
+    public float power;
+    public float jump_power = 0;
 
     private bool isWalking = false;
     private bool Squat = false;
     private bool space_down = false;
-    public float jump_power = 0;
+    private bool isGrass = true;
     private Vector3 last_velocity;
     private Vector3 movement;
     private bool in_air = false;
     private Rigidbody rb;
-    public float power;
+    private bool playing;
 
     public TextMeshProUGUI timer;
     private float startTime = 0f;
     private float currentTime = 0f;
     Animator m_Animator;
 
-    //public AudioClip jumpLanding;
-    private AudioSource playerSound;
+    public AudioSource solid_landing;
+    public AudioSource solid_walking;
     private bool canAudioPlay = false;
     
 
@@ -37,19 +41,29 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         m_Animator = GetComponent<Animator> ();
-        playerSound = GetComponent<AudioSource>();
     }
+
     //stop the player when they land on a platform
     void OnCollisionEnter(Collision theCollision)
     {
         if (theCollision.gameObject.CompareTag("Stop") && in_air)
         {
-            //movement = new Vector3(0.0f, 0.0f, 0.0f);
-            //rb.velocity = movement;
-            //rb.Sleep();
+            isGrass = false;
             in_air = false;
             if (canAudioPlay == true){
-                playerSound.Play ();
+                solid_landing.time = 0.2f;
+                solid_landing.Play ();
+            }
+            m_Animator.SetBool("inAir", in_air);
+        }
+
+        if (theCollision.gameObject.CompareTag("Grass") && in_air)
+        {
+            isGrass = true;
+            in_air = false;
+            if (canAudioPlay == true){
+                grass_landing.time = 0.2f;
+                grass_landing.Play ();
             }
             m_Animator.SetBool("inAir", in_air);
         }
@@ -59,11 +73,20 @@ public class PlayerController : MonoBehaviour
             Vector3 reflect = Vector3.Reflect(last_velocity, Vector3.right);
             rb.velocity = reflect;
         }
+
+        
     }
     //Set the player to in air when they jump
     void OnCollisionExit(Collision theCollision)
     {
         if (theCollision.gameObject.CompareTag("Stop"))
+        {
+            in_air = true;
+            canAudioPlay = true;
+            m_Animator.SetBool("inAir", in_air);
+        }
+
+        if (theCollision.gameObject.CompareTag("Grass"))
         {
             in_air = true;
             canAudioPlay = true;
@@ -97,6 +120,30 @@ public class PlayerController : MonoBehaviour
         isWalking = hasHorizontalInput || hasVerticalInput;
         m_Animator.SetBool("IsWalking", isWalking);
 
+        if(isWalking && !in_air){
+            if(isGrass){
+                if(!playing){
+                    grass_walking.Play ();
+                    playing = true;
+                }
+            }else{
+                if(!playing){
+                    solid_walking.Play ();
+                    playing = true;
+                }
+            }
+        }
+
+        if(!isWalking){
+            if(isGrass){
+                grass_walking.Stop ();
+                playing = false;
+            }else{
+                solid_walking.Stop ();
+                playing = false;
+            }
+        }
+
 
         Vector3 desiredForward = Vector3.RotateTowards(transform.forward, m_Movement, turnSpeed * Time.deltaTime, 0f);
         m_Rotation = Quaternion.LookRotation(desiredForward);
@@ -107,15 +154,11 @@ public class PlayerController : MonoBehaviour
     {
         rb.MovePosition(rb.position + m_Movement * m_Animator.deltaPosition.magnitude * 2);
         rb.MoveRotation(m_Rotation);
+        
     }
 
     void Update()
     {
-        //float horizontal = Input.GetAxis("Horizontal");
-        //float vertical = Input.GetAxis("Vertical");
-        //movement = new Vector3(horizontal, 0f, vertical);
-
-        //MovePlayer();
 
 
         // Displays game time for player
@@ -144,6 +187,9 @@ public class PlayerController : MonoBehaviour
             jump_power = jump_power + jump_multiplier;
             Squat = true;
             isWalking = false;
+            grass_walking.Stop ();
+            solid_walking.Stop ();
+            playing = false;
             m_Animator.SetBool("Squat", Squat);
             m_Animator.SetBool("IsWalking", isWalking);
         }
@@ -181,36 +227,13 @@ public class PlayerController : MonoBehaviour
             
         }
 
-        // player movement when on the ground
-        // if (Input.GetKey("left") && !space_down && !in_air){
-        //     movement = new Vector3(-6.0f,0.0f,0.0f);
-        //     //rb.velocity =  movement;
-        //     rb.AddForce(movement*speed);
-        // }
-        // if (Input.GetKey("right") && !space_down && !in_air){
-        //     movement = new Vector3(6.0f,0.0f,0.0f);
-        //     //rb.velocity = movement;
-        //     rb.AddForce(movement*speed);
-        // }
-        // // stops ball from rolling on the ground if there is no left or right input
-        // if (Input.GetKeyUp("left") && !in_air && !space_down){
-        //     rb.velocity = new Vector2 (-2,0);
-        // }
-        // if (Input.GetKeyUp("right") && !in_air && !space_down ){
-        //     rb.velocity = new Vector2 (2,0);
-        // }
-        // if player falls through ground floor, reset position
+        
         if (transform.position.y <0.3f){
             //transform.position = new Vector3 (0.0f,0.5f,0.0f);
         }
         
     }
 
-    /*private void MovePlayer()
-    {
-        Vector3 MovementVector = transform.TransformDirection(movement) * speed;
-        rb.velocity = new Vector3(MovementVector.x, rb.velocity.y, MovementVector.z);
-    }*/
 
 
 }
