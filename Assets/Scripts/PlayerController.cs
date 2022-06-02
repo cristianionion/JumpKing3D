@@ -26,6 +26,10 @@ public class PlayerController : MonoBehaviour
     private float startTime = 0f;
     private float currentTime = 0f;
     Animator m_Animator;
+
+    //public AudioClip jumpLanding;
+    private AudioSource playerSound;
+    private bool canAudioPlay = false;
     
 
     // Start is called before the first frame update
@@ -33,6 +37,7 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         m_Animator = GetComponent<Animator> ();
+        playerSound = GetComponent<AudioSource>();
     }
     //stop the player when they land on a platform
     void OnCollisionEnter(Collision theCollision)
@@ -43,6 +48,9 @@ public class PlayerController : MonoBehaviour
             //rb.velocity = movement;
             //rb.Sleep();
             in_air = false;
+            if (canAudioPlay == true){
+                playerSound.Play ();
+            }
             m_Animator.SetBool("inAir", in_air);
         }
 
@@ -58,6 +66,7 @@ public class PlayerController : MonoBehaviour
         if (theCollision.gameObject.CompareTag("Stop"))
         {
             in_air = true;
+            canAudioPlay = true;
             m_Animator.SetBool("inAir", in_air);
         }
     }
