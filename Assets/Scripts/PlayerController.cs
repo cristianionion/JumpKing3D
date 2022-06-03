@@ -40,6 +40,7 @@ public class PlayerController : MonoBehaviour
     public AudioSource solid_landing;
     public AudioSource solid_walking;
     private bool canAudioPlay = false;
+    public ParticleSystem onJump;
     
 
     // Start is called before the first frame update
@@ -186,7 +187,6 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-
         currentTime += Time.deltaTime;
         int minutes = (int)currentTime / 60;
         int seconds = (int)currentTime %60; 
@@ -269,6 +269,7 @@ public class PlayerController : MonoBehaviour
             power = Power(jump_power);
             rb.AddForce(Vector3.up * Power(jump_power), ForceMode.Impulse);
             rb.AddForce(movement * speed);
+            createParticleOnJump();
             jump_power = 0;
             space_down = false;
             Squat = false;
@@ -285,6 +286,11 @@ public class PlayerController : MonoBehaviour
 
     public void gameRestart(){
         SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().name);
+    }
+
+    void createParticleOnJump()
+    {
+        onJump.Play();
     }
 
 
