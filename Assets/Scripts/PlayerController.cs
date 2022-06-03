@@ -16,6 +16,7 @@ public class PlayerController : MonoBehaviour
     public AudioSource grass_landing;
     public float power;
     public float jump_power = 0;
+    public TextMeshProUGUI text;
 
     private bool isWalking = false;
     private bool Squat = false;
@@ -26,7 +27,7 @@ public class PlayerController : MonoBehaviour
     private bool in_air = false;
     private Rigidbody rb;
     private bool playing;
-
+    private float wait = 0;
     public TextMeshProUGUI timer;
     private float startTime = 0f;
     private float currentTime = 0f;
@@ -82,6 +83,13 @@ public class PlayerController : MonoBehaviour
 
         
     }
+
+    void OnTriggerEnter(Collider other){
+            text.enabled = true;
+            text.text = "That one is fake lol";
+            wait = Time.time;
+    }
+
     //Set the player to in air when they jump
     void OnCollisionExit(Collision theCollision)
     {
@@ -154,6 +162,19 @@ public class PlayerController : MonoBehaviour
         Vector3 desiredForward = Vector3.RotateTowards(transform.forward, m_Movement, turnSpeed * Time.deltaTime, 0f);
         m_Rotation = Quaternion.LookRotation(desiredForward);
 
+        if(Time.time == 5){
+            text.text = "Press and hold the space bar to add power and release to jump";
+        }else if (Time.time == 10){
+            text.text = "If you hold down A or D when you release space you will jump in that direction";
+        }else if(Time.time == 15){
+            text.text = "Have fun!";
+        }else if(Time.time == 20){
+            text.enabled = false;
+        }
+
+        if((Time.time) - wait == 5 && Time.time != 5){
+            text.enabled = false;
+        }
     }
 
     void OnAnimatorMove()
