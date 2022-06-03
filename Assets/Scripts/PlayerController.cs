@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using System;
 using TMPro;
 
@@ -29,6 +30,10 @@ public class PlayerController : MonoBehaviour
     public TextMeshProUGUI timer;
     private float startTime = 0f;
     private float currentTime = 0f;
+
+    public TextMeshProUGUI winner;
+    private bool hasWon = false;
+    public GameObject restartButton;
     Animator m_Animator;
 
     public AudioSource solid_landing;
@@ -41,6 +46,7 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         m_Animator = GetComponent<Animator> ();
+        restartButton.SetActive(false);
     }
 
     //stop the player when they land on a platform
@@ -160,21 +166,43 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
 
-
+        currentTime += Time.deltaTime;
+        int minutes = (int)currentTime / 60;
+        int seconds = (int)currentTime %60; 
         // Displays game time for player
-        if (startTime <= 0){
-            currentTime += Time.deltaTime;
-            int minutes = (int)currentTime / 60;
-            int seconds = (int)currentTime %60; 
+        if (startTime <= 0 && !hasWon){
+
             if (seconds < 10){
-                timer.text = "Time Elapsed: " +minutes.ToString()+":0"+seconds.ToString();
+                timer.text = "Time Elapsed: \n" +minutes.ToString()+":0"+seconds.ToString();
             }
             else{
-                timer.text = "Time Elapsed: "+ minutes.ToString()+":"+ seconds.ToString();
+                timer.text = "Time Elapsed: \n"+ minutes.ToString()+":"+ seconds.ToString();
             }
+        }
 
+        if ((transform.position.y > 110.0f) && (transform.position.x < 0.0f)){
+            hasWon = true;
+        }
+        else{
+            hasWon= false;
+        }
+        if (hasWon){
+            var timerTextSplit = timer.text.Split('\n');
+            var winTime = timerTextSplit[1];
+            restartButton.SetActive(true);
+            if (seconds <10){
+                winner.text = "Congratulations!! \nYou beat JumpKing3D in: \n"+winTime;
+            }
+            else{
+                winner.text = "Congratulations!! \nYou beat JumpKing3D in: \n"+winTime;
+            }
             
         }
+        else{
+            winner.text = "";
+        }
+            
+        
 
         last_velocity = rb.velocity;
         //See if player is trying to jump
@@ -232,6 +260,10 @@ public class PlayerController : MonoBehaviour
             //transform.position = new Vector3 (0.0f,0.5f,0.0f);
         }
         
+    }
+
+    public void gameRestart(){
+        SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().name);
     }
 
 
