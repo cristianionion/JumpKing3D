@@ -9697,7 +9697,7 @@ MonoBehaviour:
   speed: 3
   jump_multiplier: 0.01
   min_power: 5
-  max_power: 100
+  max_power: 45
   grass_walking: {fileID: 1904730029}
   grass_landing: {fileID: 605830477}
   power: 0
