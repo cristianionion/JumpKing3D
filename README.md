@@ -6,3 +6,5 @@ JumpKing3D is an implementation of [Jump King](https://nexile.se/jump-king/) by 
 
 ## How to play
 The game can be ran on Unity 2021.2.14 by opening the game folder in the Unity editor. Before entering play mode, make sure to load the "intro" scene into the editor. Now the game is ready to be played in play mode. Enjoy!
+
+- You can also change the player's movement and jumping power. To do this, in the scene "Game", click on castle_guard_1, and change the settings under the script "Player Controller".
